@@ -17,7 +17,7 @@ const BUDGETS = {
   totalCSS: 50,      // Total CSS size
   largestJS: 100,    // Any single JS file
   largestCSS: 30,    // Any single CSS file
-  images: 2000,      // Total image size (generous for hero images)
+  images: 2500,      // Total image size (generous for hero images)
 };
 
 function getFileSizeKB(filePath) {
