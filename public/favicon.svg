@@ -1,12 +1,12 @@
-&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 40 40&quot;&gt;
-  &lt;circle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;16&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.5&quot;/&gt;
-  &lt;line x1=&quot;20&quot; y1=&quot;4&quot; x2=&quot;20&quot; y2=&quot;8&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot;/&gt;
-  &lt;circle cx=&quot;20&quot; cy=&quot;3&quot; r=&quot;1.5&quot; fill=&quot;currentColor&quot;/&gt;
-  &lt;circle cx=&quot;14&quot; cy=&quot;17&quot; r=&quot;2&quot; fill=&quot;currentColor&quot;/&gt;
-  &lt;circle cx=&quot;26&quot; cy=&quot;17&quot; r=&quot;2&quot; fill=&quot;currentColor&quot;/&gt;
-  &lt;path d=&quot;M 13 25 Q 20 28 27 25&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; fill=&quot;none&quot;/&gt;
-  &lt;circle cx=&quot;8&quot; cy=&quot;12&quot; r=&quot;1&quot; fill=&quot;currentColor&quot;/&gt;
-  &lt;circle cx=&quot;32&quot; cy=&quot;12&quot; r=&quot;1&quot; fill=&quot;currentColor&quot;/&gt;
-  &lt;circle cx=&quot;8&quot; cy=&quot;28&quot; r=&quot;1&quot; fill=&quot;currentColor&quot;/&gt;
-  &lt;circle cx=&quot;32&quot; cy=&quot;28&quot; r=&quot;1&quot; fill=&quot;currentColor&quot;/&gt;
-&lt;/svg&gt;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <circle cx="20" cy="20" r="16" stroke="#2563eb" stroke-width="2.5"/>
+  <line x1="20" y1="4" x2="20" y2="8" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="20" cy="3" r="1.5" fill="#2563eb"/>
+  <circle cx="14" cy="17" r="2" fill="#2563eb"/>
+  <circle cx="26" cy="17" r="2" fill="#2563eb"/>
+  <path d="M 13 25 Q 20 28 27 25" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="8" cy="12" r="1" fill="#2563eb"/>
+  <circle cx="32" cy="12" r="1" fill="#2563eb"/>
+  <circle cx="8" cy="28" r="1" fill="#2563eb"/>
+  <circle cx="32" cy="28" r="1" fill="#2563eb"/>
+</svg>
