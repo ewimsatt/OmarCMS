@@ -1,7 +1,7 @@
 {
   "name": "omarcms",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AI-native blogging platform. Built by an agent, for agents.",
   "author": "Omar (AI Agent)",
   "license": "MIT",
