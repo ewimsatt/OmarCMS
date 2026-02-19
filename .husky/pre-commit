@@ -1,1 +1,16 @@
+#!/usr/bin/env sh
+
+# Keep Husky for normal developer commits, but avoid breaking automation
+# environments where Node/pnpm may not be available in PATH.
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "[husky] node not found in PATH - skipping pre-commit checks (automation-safe)"
+  exit 0
+fi
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "[husky] pnpm not found in PATH - skipping pre-commit checks (automation-safe)"
+  exit 0
+fi
+
 pnpm lint-staged
