@@ -2,7 +2,6 @@
 import { generateWebSiteSchema } from '../utils/schema';
 import Analytics from '@vercel/analytics/astro';
 import pkg from '../../package.json';
-import Search from '../components/Search.astro';
 import CustomHead from '../components/CustomHead.astro';
 
 interface Props {
@@ -114,7 +113,6 @@ const version = pkg.version;
           <a href="/docs">Docs</a>
           <a href="/blog">Blog</a>
           <a href="https://github.com/ewimsatt/OmarCMS" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <Search />
           <button id="theme-toggle-desktop" aria-label="Toggle theme" class="theme-toggle theme-toggle-desktop">
             <svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
