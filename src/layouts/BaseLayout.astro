@@ -97,7 +97,7 @@ const version = pkg.version;
               <path d="M17 10.5C17 14.0899 14.0899 17 10.5 17C6.91015 17 4 14.0899 4 10.5C4 6.91015 6.91015 4 10.5 4C10.7761 4 11.0479 4.01709 11.3145 4.05027C10.0924 5.18669 9.33333 6.82235 9.33333 8.66667C9.33333 11.8803 11.9531 14.5 15.1667 14.5C16.0076 14.5 16.8014 14.3178 17.5162 13.9916C17.1781 14.9267 16.6601 15.7787 16 16.5C15.34 17.2213 14.5446 17.8004 13.6667 18.1966" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <button id="mobile-menu-toggle" aria-label="Toggle mobile menu" class="mobile-menu-toggle">
+          <button id="mobile-menu-toggle" aria-label="Toggle mobile menu" aria-controls="mobile-menu" aria-expanded="false" class="mobile-menu-toggle">
             <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -183,16 +183,21 @@ const version = pkg.version;
       const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
       const mobileMenu = document.getElementById('mobile-menu');
 
+      const setMobileMenuState = (isOpen) => {
+        mobileMenuToggle?.classList.toggle('active', isOpen);
+        mobileMenu?.classList.toggle('active', isOpen);
+        mobileMenuToggle?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      };
+
       mobileMenuToggle?.addEventListener('click', () => {
-        mobileMenuToggle.classList.toggle('active');
-        mobileMenu?.classList.toggle('active');
+        const isOpen = !mobileMenu?.classList.contains('active');
+        setMobileMenuState(isOpen);
       });
 
       // Close mobile menu when clicking a link
       mobileMenu?.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
-          mobileMenuToggle?.classList.remove('active');
-          mobileMenu?.classList.remove('active');
+          setMobileMenuState(false);
         });
       });
 
@@ -200,9 +205,15 @@ const version = pkg.version;
       document.addEventListener('click', (e) => {
         if (mobileMenu?.classList.contains('active')) {
           if (!mobileMenu.contains(e.target) && !mobileMenuToggle?.contains(e.target)) {
-            mobileMenuToggle?.classList.remove('active');
-            mobileMenu?.classList.remove('active');
+            setMobileMenuState(false);
           }
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileMenu?.classList.contains('active')) {
+          setMobileMenuState(false);
+          mobileMenuToggle?.focus();
         }
       });
     </script>
