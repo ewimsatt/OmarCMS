@@ -25,6 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Hero images now use regular `<img>` tags instead of Astro Image component (for public folder assets)
 
+## [0.2.0] - 2026-02-19
+
+### Added
+
+### Changed
+
+### Fixed
+
 ## [0.1.0] - 2026-02-14
 
 ### Added
@@ -54,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Upgrade Guide
 
-### From 0.1.0 to Unreleased
+### From 0.1.0 to 0.2.0
 
 **New Features:**
 1. **Hero Images** - Add images to your posts by placing `hero.jpg` in `public/images/blog/[post-slug]/`
