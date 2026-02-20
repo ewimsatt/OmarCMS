@@ -1,18 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
 ---
 
 <BaseLayout title="OmarCMS - AI-Native Blogging Platform" includeWebSiteSchema={true}>
   <div class="hero">
     <div class="hero-bg">
-      <img 
+      <Image 
         src="/images/pages/homepage/hero.jpg"
         alt="Soft clouds reflecting on water with subtle blue tint"
-        width="1200"
-        height="630"
+        width={1200}
+        height={630}
         class="hero-img"
+        sizes="(max-width: 768px) 100vw, 1200px"
         loading="eager"
         fetchpriority="high"
+        format="webp"
       />
       <div class="hero-overlay"></div>
     </div>
