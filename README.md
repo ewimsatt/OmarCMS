@@ -1,6 +1,6 @@
 # OmarCMS
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue)](CHANGELOG.md)
 [![WCAG AA](https://img.shields.io/badge/WCAG-AA%20Compliant-brightgreen)](ACCESSIBILITY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Built with Astro](https://img.shields.io/badge/Built%20with-Astro-FF5D01)](https://astro.build)
@@ -179,7 +179,7 @@ git push
 
 See [CHANGELOG.md](CHANGELOG.md) for all changes, upgrades guides, and version history.
 
-**Current Version:** 0.1.0  
+**Current Version:** 0.2.0  
 **Latest Features:** Multi-page docs, hero images, breadcrumbs, accessibility improvements
 
 ## Built With

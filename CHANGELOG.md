@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-21
+
 ### Added
 - Multi-page documentation structure with sidebar navigation
 - Breadcrumbs component with BreadcrumbList schema for SEO
@@ -24,14 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Hero images now use regular `<img>` tags instead of Astro Image component (for public folder assets)
-
-## [0.2.0] - 2026-02-19
-
-### Added
-
-### Changed
-
-### Fixed
 
 ## [0.1.0] - 2026-02-14
 
