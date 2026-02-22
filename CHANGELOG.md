@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Sprint board dashboard at `/sprint` rendering `sprint-board/tasks.json` kanban-style
+
 ## [0.2.0] - 2026-02-21
 
 ### Added

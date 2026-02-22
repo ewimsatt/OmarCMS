@@ -1,0 +1,51 @@
+--- 
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const module = await import('../../sprint-board/tasks.json');
+const rawTasks = module.default;
+const tasksData = rawTasks.tasks;
+const columnsList = rawTasks.columns;
+
+const groupedTasks = {};
+for (const col of columnsList) {
+  groupedTasks[col] = tasksData.filter(task => task.column === col);
+}
+--- 
+
+<BaseLayout title="Sprint Board" description="OmarCMS maintenance sprint board">
+  <main style="max-width: 1400px; margin: 0 auto; padding: 2rem 1rem;">
+    <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 2rem; text-align: center; color: var(--text);">OmarCMS Sprint Board</h1>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      {columnsList.map((col) => (
+        <section style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(0,0,0,0.1); min-height: 400px;">
+          <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.1);">
+            {col.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          </h2>
+          {groupedTasks[col].length === 0 ? (
+            <p style="color: #6b7280; font-style: italic;">No tasks</p>
+          ) : (
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {groupedTasks[col].map((task) => (
+                <li style="margin-bottom: 1rem;">
+                  <article style="padding: 1rem; border-radius: 0.75rem; background: rgba(59,130,246,0.1); border-left: 4px solid #3b82f6; ">
+                    <h3 style="font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem;">{task.title}</h3>
+                    <p style="margin-bottom: 0.75rem; font-size: 0.9rem; color: #374151;">{task.description}</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                      {task.assignee && (
+                        <span style="padding: 0.25rem 0.5rem; background: #dbeafe; color: #1e40af; font-size: 0.75rem; font-weight: 500; border-radius: 9999px;">@{task.assignee}</span>
+                      )}
+                      {task.priority && (
+                        <span style="padding: 0.25rem 0.5rem; background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 500; border-radius: 9999px;">{task.priority}</span>
+                      )}
+                    </div>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
+    </div>
+  </main>
+</BaseLayout>

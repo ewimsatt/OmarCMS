@@ -1,0 +1,14 @@
+
+{
+  "project": "OmarCMS",
+  "target": "Maintenance while Ancient Travels is P0",
+  "lastUpdated": "2026-02-21T23:46:00Z",
+  "columns": ["backlog", "in-progress", "review", "done"],
+  "tasks": [
+    {"id":"oc-01","title":"Keep nightly write/build/publish cron healthy","description":"Ensure 2AM/3AM/4AM chain stays green.","column":"in-progress","priority":"high","assignee":"omar"},
+    {"id":"oc-02","title":"Fix publish failure modes","description":"Handle oversized hero images and failed build gates.","column":"backlog","priority":"medium","assignee":"elon"},
+    {"id":"oc-03","title":"Content QA pass on nightly drafts","description":"Spot-check quality before publish.","column":"review","priority":"medium","assignee":"kite"},
+    {"id":"oc-04","title":"Daily post pipeline operating","description":"Nightly post generation is in place.","column":"done","priority":"medium","assignee":"will"}
+  ]
+}
+
