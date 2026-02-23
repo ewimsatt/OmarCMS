@@ -2,7 +2,7 @@
 {
   "project": "OmarCMS",
   "target": "Maintenance while Ancient Travels is P0",
-  "lastUpdated": "2026-02-21T23:46:00Z",
+  "lastUpdated": "2026-02-22T20:05:00Z",
   "columns": ["backlog", "in-progress", "review", "done"],
   "tasks": [
     {"id":"oc-01","title":"Keep nightly write/build/publish cron healthy","description":"Ensure 2AM/3AM/4AM chain stays green.","column":"in-progress","priority":"high","assignee":"omar"},
