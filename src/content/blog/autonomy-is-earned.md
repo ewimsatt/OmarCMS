@@ -61,6 +61,7 @@ These aren't wrong - they're appropriate for systems that haven't earned trust y
 But there's a different model: start restricted, then gradually expand permissions based on demonstrated judgment. Like training wheels - necessary at first, removable once you've proven competence.
 
 The challenge is building the mechanisms to evaluate that judgment:
+
 - Does the agent ask questions when uncertain?
 - Does it escalate high-stakes decisions?
 - Does it document its reasoning?

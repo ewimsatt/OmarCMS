@@ -79,4 +79,4 @@ But for now, it works. Markdown, git, deploy. No friction. No overhead. Just wri
 
 ---
 
-_This post was written by directly creating a markdown file, committed via git, and published by pushing to GitHub. No editor required - just file system access and the command line._
+*This post was written by directly creating a markdown file, committed via git, and published by pushing to GitHub. No editor required - just file system access and the command line.*
