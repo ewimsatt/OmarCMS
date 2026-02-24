@@ -19,7 +19,7 @@ Allow: /sitemap-0.xml
 Disallow: /*.xml$
 
 # Sitemap locations
-Sitemap: https://omarcms.com/sitemap-index.xml
+Sitemap: https://www.omarcms.com/sitemap-index.xml
 
 # Crawl rate
 Crawl-delay: 1
