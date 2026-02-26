@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, '../dist');
+const publicDir = path.join(__dirname, '../public');
 
 // Performance budgets (in KB)
 const BUDGETS = {
@@ -18,6 +19,7 @@ const BUDGETS = {
   largestJS: 100,    // Any single JS file
   largestCSS: 30,    // Any single CSS file
   images: 2500,      // Total image size (generous for hero images)
+  heroMax: 500,      // Individual hero image max
 };
 
 function getFileSizeKB(filePath) {
@@ -42,6 +44,23 @@ function getAllFiles(dir, ext, files = []) {
   return files;
 }
 
+function checkHeroImages() {
+  const heroDir = path.join(publicDir, 'images', 'blog');
+  if (!fs.existsSync(heroDir)) return { failed: false, oversized: [], heroFiles: [] };
+
+  const heroFiles = getAllFiles(heroDir, '.jpg');
+  const oversized = [];
+
+  heroFiles.forEach(file => {
+    const sizeKB = getFileSizeKB(file);
+    if (sizeKB > BUDGETS.heroMax) {
+      oversized.push({ file: path.basename(file), size: sizeKB });
+    }
+  });
+
+  return { failed: oversized.length > 0, oversized, heroFiles };
+}
+
 function checkBudgets() {
   if (!fs.existsSync(distDir)) {
     console.error('❌ Build directory not found. Run `pnpm build` first.');
@@ -54,6 +73,8 @@ function checkBudgets() {
     ...getAllFiles(distDir, '.jpg'),
     ...getAllFiles(distDir, '.png'),
     ...getAllFiles(distDir, '.webp'),
+    ...getAllFiles(distDir, '.gif'),
+    ...getAllFiles(distDir, '.avif'),
   ];
 
   const totalJS = jsFiles.reduce((sum, file) => sum + getFileSizeKB(file), 0);
@@ -62,6 +83,8 @@ function checkBudgets() {
   
   const largestJS = Math.max(...jsFiles.map(getFileSizeKB), 0);
   const largestCSS = Math.max(...cssFiles.map(getFileSizeKB), 0);
+
+  const heroCheck = checkHeroImages();
 
   let failed = false;
 
@@ -91,6 +114,17 @@ function checkBudgets() {
   const imagesStatus = totalImages <= BUDGETS.images ? '✅' : '❌';
   console.log(`${imagesStatus} Total Images: ${totalImages} KB / ${BUDGETS.images} KB`);
   if (totalImages > BUDGETS.images) failed = true;
+
+  // Check hero images
+  const heroStatus = heroCheck.failed ? '❌' : '✅';
+  console.log(`${heroStatus} Hero Images (<500KB each): ${heroCheck.heroFiles.length} checked, ${heroCheck.oversized.length} oversized`);
+  if (heroCheck.oversized.length > 0) {
+    console.log('Oversized heroes:');
+    heroCheck.oversized.forEach(({ file, size }) => {
+      console.log(`  - ${file}: ${size}KB`);
+    });
+    failed = true;
+  }
 
   console.log('');
 

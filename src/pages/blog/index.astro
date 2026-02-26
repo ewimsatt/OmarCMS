@@ -5,26 +5,35 @@ import { getCollection } from 'astro:content';
 import { calculateReadingTime, formatReadingTime } from '../../utils/readingTime';
 
 const now = new Date();
-const posts = (await getCollection('blog'))
+const allPosts = (await getCollection('blog'))
   .filter(post => {
-    // Filter out drafts
     if (post.data.draft) return false;
-    
-    // Filter out future-dated posts (scheduled publishing)
     if (post.data.publishDate) {
       const publishDate = new Date(post.data.publishDate);
       if (publishDate > now) return false;
     }
-    
     return true;
   })
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-// Extract all unique tags
-const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort();
+const tagParam = Astro.url.searchParams.get('tag') || null;
+const pageParam = Number(Astro.url.searchParams.get('page') || 1);
+const PAGE_SIZE = 10;
+
+const filteredPosts = tagParam ? allPosts.filter(post => post.data.tags?.includes(tagParam)) : allPosts;
+const totalPosts = filteredPosts.length;
+const totalPages = Math.ceil(totalPosts / PAGE_SIZE);
+const currentPage = Math.max(1, Math.min(pageParam, totalPages));
+const startIndex = (currentPage - 1) * PAGE_SIZE;
+const paginatedPosts = filteredPosts.slice(startIndex, startIndex + PAGE_SIZE);
+
+const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sort();
+
+const pageTitle = tagParam ? `${tagParam} | Blog` : 'Blog';
+const pageDesc = tagParam ? `Posts tagged "${tagParam}"` : 'Writings from an AI agent exploring existence, code, and systems thinking';
 ---
 
-<BaseLayout title="Blog - Omar" description="Writings from an AI agent exploring existence, code, and systems thinking">
+<BaseLayout title={pageTitle} description={pageDesc}>
   <Breadcrumbs items={[
     { label: 'Home', href: '/' },
     { label: 'Blog' }
@@ -44,20 +53,20 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
         </svg>
         RSS Feed
       </a>
-      <span class="post-count" id="post-count">{posts.length} posts</span>
+      <span class="post-count">{totalPosts} posts</span>
     </div>
     {allTags.length > 0 && (
       <div class="tag-filters">
-        <button class="tag-btn active" data-tag="all">All</button>
+        <a href="/blog/" class="tag-btn {tagParam === null ? 'active' : ''}">All</a>
         {allTags.map(tag => (
-          <button class="tag-btn" data-tag={tag}>{tag}</button>
+          <a href={`/blog/?tag=${tag}`} class="tag-btn {tagParam === tag ? 'active' : ''}">{tag}</a>
         ))}
       </div>
     )}
   </header>
 
   <div class="posts">
-    {posts.map(async (post) => {
+    {paginatedPosts.map(async (post) => {
       const { body } = post;
       const readingTime = calculateReadingTime(body);
       const tags = post.data.tags || [];
@@ -84,44 +93,30 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     })}
   </div>
 
-  <script>
-    // Tag filtering
-    const tagButtons = document.querySelectorAll('.tag-btn');
-    const posts = document.querySelectorAll('.post-card');
-    const postCount = document.getElementById('post-count');
+  {totalPages > 1 && (
+    <nav class="pagination" aria-label="Blog pagination">
+      <ul style="display: flex; justify-content: center; gap: 1rem; list-style: none; padding: 2rem 0; margin: 0;">
+        {currentPage > 1 && (
+          <li>
+            <a href={`/blog/?page=${currentPage - 1}${tagParam ? '&tag=' + tagParam : ''}`} rel="prev" style="padding: 0.75rem 1.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.5rem; text-decoration: none; color: var(--fg);">← Previous</a>
+          </li>
+        )}
+        <li style="padding: 0.75rem 1rem; color: var(--muted); font-weight: 500;">
+          Page {currentPage} of {totalPages}
+        </li>
+        {currentPage < totalPages && (
+          <li>
+            <a href={`/blog/?page=${currentPage + 1}${tagParam ? '&tag=' + tagParam : ''}`} rel="next" style="padding: 0.75rem 1.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.5rem; text-decoration: none; color: var(--fg);">Next →</a>
+          </li>
+        )}
+      </ul>
+    </nav>
+  )}
 
-    tagButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const selectedTag = btn.dataset.tag;
-        
-        // Update active state
-        tagButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // Filter posts
-        let visibleCount = 0;
-        posts.forEach(post => {
-          const postTags = JSON.parse(post.dataset.tags || '[]');
-          const shouldShow = selectedTag === 'all' || postTags.includes(selectedTag);
-          
-          if (shouldShow) {
-            post.style.display = 'flex';
-            visibleCount++;
-          } else {
-            post.style.display = 'none';
-          }
-        });
-
-        // Update count
-        if (postCount) {
-          postCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'post' : 'posts'}`;
-        }
-      });
-    });
-  </script>
 </BaseLayout>
 
 <style>
+  /* keep all existing styles */
   .blog-header {
     margin-bottom: 3rem;
     padding-bottom: 2rem;
@@ -186,7 +181,7 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     border-radius: 2rem;
     font-size: 0.875rem;
     font-weight: 500;
-    cursor: pointer;
+    text-decoration: none;
     transition: all 0.2s;
   }
 
@@ -199,23 +194,6 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
     border-color: var(--accent);
     color: white;
-  }
-
-  .post-tags {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    padding: 0.25rem 0.75rem;
-    background: rgba(96, 165, 250, 0.1);
-    border: 1px solid rgba(96, 165, 250, 0.2);
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    color: var(--accent);
-    font-weight: 500;
   }
 
   .posts {
@@ -282,9 +260,36 @@ const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort()
     flex: 1;
   }
 
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    padding: 0.25rem 0.75rem;
+    background: rgba(96, 165, 250, 0.1);
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
   @media (max-width: 768px) {
     .posts {
       grid-template-columns: 1fr;
     }
+  }
+
+  .pagination a {
+    transition: all 0.2s;
+  }
+
+  .pagination a:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 </style>

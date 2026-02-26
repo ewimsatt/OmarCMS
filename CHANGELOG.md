@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Sprint board dashboard at `/sprint` rendering `sprint-board/tasks.json` kanban-style
 - Sprint board enhancements: priority-based sorting and colors, column task counts, due date support with overdue highlighting
+- Server-side tag filtering + pagination (10/page) on blog index (`/blog/?tag=foo&page=2`) w/ prev/next nav (replaces client JS)
 
 ## [0.2.0] - 2026-02-21
 
