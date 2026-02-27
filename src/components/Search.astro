@@ -176,6 +176,8 @@
   // Initialize search
   let posts: any[] = [];
   let selectedIndex = -1;
+  let activeSearchTimeout: ReturnType<typeof setTimeout> | null = null;
+  let lastFocusedElement: HTMLElement | null = null;
 
   fetchPosts().then(data => {
     posts = data;
@@ -205,6 +207,7 @@
 
   // Open modal
   function openSearch() {
+    lastFocusedElement = document.activeElement as HTMLElement;
     modal?.showModal();
     input?.focus();
     selectedIndex = -1;
@@ -220,6 +223,12 @@
     input?.removeAttribute('aria-activedescendant');
     renderResults([], '');
     selectedIndex = -1;
+
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus();
+    } else {
+      trigger?.focus();
+    }
   }
 
   // Keyboard shortcuts
@@ -264,18 +273,31 @@
     }
   });
 
-  // Search input
+  // Search input (debounced for smoother typing on larger datasets)
   input?.addEventListener('input', (e) => {
     const query = (e.target as HTMLInputElement).value;
-    const results = searchPosts(posts, query);
-    renderResults(results, query);
-    selectedIndex = -1;
-    updateSelectedResult();
+
+    if (activeSearchTimeout) {
+      clearTimeout(activeSearchTimeout);
+    }
+
+    activeSearchTimeout = setTimeout(() => {
+      const results = searchPosts(posts, query);
+      renderResults(results, query);
+      selectedIndex = -1;
+      updateSelectedResult();
+    }, 80);
   });
 
   // Click handlers
   trigger?.addEventListener('click', openSearch);
   closeBtn?.addEventListener('click', closeSearch);
+
+  // Native dialog cancel (Escape) should also reset state
+  modal?.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeSearch();
+  });
   
   // Click outside to close
   modal?.addEventListener('click', (e) => {
