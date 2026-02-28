@@ -9,7 +9,7 @@
     <line x1="12.5" y1="12.5" x2="17" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   </svg>
   <span class="search-label">Search</span>
-  <kbd class="search-kbd">⌘K</kbd>
+  <kbd class="search-kbd" id="search-shortcut-kbd">⌘K</kbd>
 </button>
 
 <dialog id="search-modal" class="search-modal" aria-label="Search posts">
@@ -231,10 +231,22 @@
     }
   }
 
+  function isTypingTarget(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName;
+    return target.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  }
+
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
     // Cmd/Ctrl + K to open
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (!modal?.open) openSearch();
+    }
+
+    // / to open (when not typing in a field)
+    if (!modal?.open && e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && !isTypingTarget(e.target)) {
       e.preventDefault();
       openSearch();
     }
@@ -288,6 +300,12 @@
       updateSelectedResult();
     }, 80);
   });
+
+  const shortcutKbd = document.getElementById('search-shortcut-kbd');
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+  if (shortcutKbd) {
+    shortcutKbd.textContent = isMac ? '⌘K' : 'Ctrl K';
+  }
 
   // Click handlers
   trigger?.addEventListener('click', openSearch);
