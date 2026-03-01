@@ -118,6 +118,12 @@
     const status = document.getElementById('search-status');
     if (!container) return;
     
+    if (query === '__loading__' || postsLoading) {
+      container.innerHTML = '<div class="search-empty"><p>Loading search index…</p></div>';
+      if (status) status.textContent = 'Loading search index.';
+      return;
+    }
+
     if (!query.trim()) {
       container.innerHTML = '<div class="search-empty"><p>Start typing to search posts...</p></div>';
       if (status) status.textContent = 'Search ready. Start typing to find posts.';
@@ -173,15 +179,33 @@
     return escapedText.replace(regex, '<mark>$1</mark>');
   }
 
-  // Initialize search
+  // Initialize search (lazy-load index on demand to avoid work on non-search sessions)
   let posts: any[] = [];
+  let postsLoaded = false;
+  let postsLoading = false;
+  let postsLoadPromise: Promise<void> | null = null;
   let selectedIndex = -1;
   let activeSearchTimeout: ReturnType<typeof setTimeout> | null = null;
   let lastFocusedElement: HTMLElement | null = null;
 
-  fetchPosts().then(data => {
-    posts = data;
-  });
+  async function ensurePostsLoaded() {
+    if (postsLoaded) return;
+    if (postsLoadPromise) return postsLoadPromise;
+
+    postsLoading = true;
+    renderResults([], '__loading__');
+
+    postsLoadPromise = fetchPosts()
+      .then((data) => {
+        posts = data;
+        postsLoaded = true;
+      })
+      .finally(() => {
+        postsLoading = false;
+      });
+
+    return postsLoadPromise;
+  }
 
   const modal = document.getElementById('search-modal') as HTMLDialogElement;
   const trigger = document.getElementById('search-trigger');
@@ -206,13 +230,21 @@
   }
 
   // Open modal
-  function openSearch() {
+  async function openSearch() {
     lastFocusedElement = document.activeElement as HTMLElement;
     modal?.showModal();
     input?.focus();
     selectedIndex = -1;
     input?.setAttribute('aria-expanded', 'true');
     updateSelectedResult();
+
+    await ensurePostsLoaded();
+    if (input?.value) {
+      const results = searchPosts(posts, input.value);
+      renderResults(results, input.value);
+    } else {
+      renderResults([], '');
+    }
   }
 
   // Close modal
@@ -286,8 +318,12 @@
   });
 
   // Search input (debounced for smoother typing on larger datasets)
-  input?.addEventListener('input', (e) => {
+  input?.addEventListener('input', async (e) => {
     const query = (e.target as HTMLInputElement).value;
+
+    if (!postsLoaded) {
+      await ensurePostsLoaded();
+    }
 
     if (activeSearchTimeout) {
       clearTimeout(activeSearchTimeout);
