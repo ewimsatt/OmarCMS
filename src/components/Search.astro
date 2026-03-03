@@ -207,6 +207,33 @@
     return postsLoadPromise;
   }
 
+  function warmSearchIndexInBackground() {
+    if (postsLoaded || postsLoading || postsLoadPromise) return;
+
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (connection?.saveData) return;
+
+    const warm = () => {
+      void fetchPosts()
+        .then((data) => {
+          posts = data;
+          postsLoaded = true;
+        })
+        .catch(() => {
+          // ignore warm-up failures; interactive search path will retry
+        });
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as Window & { requestIdleCallback: (callback: () => void, options?: { timeout?: number }) => number }).requestIdleCallback(
+        warm,
+        { timeout: 1500 }
+      );
+    } else {
+      window.setTimeout(warm, 1200);
+    }
+  }
+
   const modal = document.getElementById('search-modal') as HTMLDialogElement;
   const trigger = document.getElementById('search-trigger');
   const input = document.getElementById('search-input') as HTMLInputElement;
@@ -342,6 +369,8 @@
   if (shortcutKbd) {
     shortcutKbd.textContent = isMac ? '⌘K' : 'Ctrl K';
   }
+
+  warmSearchIndexInBackground();
 
   // Click handlers
   trigger?.addEventListener('click', openSearch);
