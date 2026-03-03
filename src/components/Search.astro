@@ -60,54 +60,79 @@
     }
   }
 
-  // Simple fuzzy search
+  // Simple fuzzy search with token support and prefix weighting
   function fuzzyMatch(text: string, query: string): number {
-    text = text.toLowerCase();
-    query = query.toLowerCase();
-    
-    // Exact match gets highest score
-    if (text.includes(query)) {
+    const haystack = text.toLowerCase();
+    const needle = query.toLowerCase().trim();
+
+    if (!needle) return 0;
+
+    // Prefix and exact phrase matches should rank highest
+    if (haystack.startsWith(needle)) {
+      return 125;
+    }
+
+    if (haystack.includes(needle)) {
       return 100;
     }
-    
+
     // Check if all query characters appear in order
     let queryIndex = 0;
     let matches = 0;
-    
-    for (let i = 0; i < text.length && queryIndex < query.length; i++) {
-      if (text[i] === query[queryIndex]) {
+
+    for (let i = 0; i < haystack.length && queryIndex < needle.length; i++) {
+      if (haystack[i] === needle[queryIndex]) {
         matches++;
         queryIndex++;
       }
     }
-    
-    if (queryIndex === query.length) {
-      return (matches / text.length) * 50;
+
+    if (queryIndex === needle.length) {
+      return (matches / haystack.length) * 50;
     }
-    
+
     return 0;
+  }
+
+  function scoreByTerms(text: string | undefined, terms: string[]): number {
+    if (!text || terms.length === 0) return 0;
+    return terms.reduce((score, term) => score + fuzzyMatch(text, term), 0);
   }
 
   // Search posts
   function searchPosts(posts: any[], query: string) {
-    if (!query.trim()) return [];
-    
+    const trimmed = query.trim();
+    if (!trimmed) return [];
+
+    const terms = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+
     const results = posts.map(post => {
-      const titleScore = fuzzyMatch(post.title, query);
-      const descScore = post.description ? fuzzyMatch(post.description, query) : 0;
-      const tagScore = post.tags ? Math.max(...post.tags.map((tag: string) => fuzzyMatch(tag, query))) : 0;
-      
-      const maxScore = Math.max(titleScore, descScore, tagScore);
-      
+      const titleScore = scoreByTerms(post.title, terms) * 1.4;
+      const descScore = scoreByTerms(post.description, terms) * 0.8;
+      const tagScore = post.tags
+        ? post.tags.reduce((sum: number, tag: string) => sum + scoreByTerms(tag, terms), 0) * 1.2
+        : 0;
+
+      // Require at least one term hit in title/tags to avoid noisy long-description matches
+      const titleOrTagCoverage = terms.filter((term) =>
+        fuzzyMatch(post.title, term) > 0 || (post.tags?.some((tag: string) => fuzzyMatch(tag, term) > 0) ?? false)
+      ).length;
+
+      const totalScore = titleScore + descScore + tagScore;
+
       return {
         post,
-        score: maxScore
+        score: totalScore,
+        coverage: titleOrTagCoverage
       };
     });
-    
+
     return results
-      .filter(r => r.score > 0)
-      .sort((a, b) => b.score - a.score)
+      .filter(r => r.score > 0 && r.coverage > 0)
+      .sort((a, b) => {
+        if (b.coverage !== a.coverage) return b.coverage - a.coverage;
+        return b.score - a.score;
+      })
       .slice(0, 8)
       .map(r => r.post);
   }
