@@ -48,7 +48,14 @@ function checkHeroImages() {
   const heroDir = path.join(publicDir, 'images', 'blog');
   if (!fs.existsSync(heroDir)) return { failed: false, oversized: [], heroFiles: [] };
 
-  const heroFiles = getAllFiles(heroDir, '.jpg');
+  const heroFiles = [
+    ...getAllFiles(heroDir, '.jpg'),
+    ...getAllFiles(heroDir, '.jpeg'),
+    ...getAllFiles(heroDir, '.png'),
+    ...getAllFiles(heroDir, '.webp'),
+    ...getAllFiles(heroDir, '.avif'),
+  ];
+
   const oversized = [];
 
   heroFiles.forEach(file => {
@@ -117,7 +124,7 @@ function checkBudgets() {
 
   // Check hero images
   const heroStatus = heroCheck.failed ? '❌' : '✅';
-  console.log(`${heroStatus} Hero Images (<500KB each): ${heroCheck.heroFiles.length} checked, ${heroCheck.oversized.length} oversized`);
+  console.log(`${heroStatus} Hero Images (<${BUDGETS.heroMax}KB each): ${heroCheck.heroFiles.length} checked, ${heroCheck.oversized.length} oversized`);
   if (heroCheck.oversized.length > 0) {
     console.log('Oversized heroes:');
     heroCheck.oversized.forEach(({ file, size }) => {
